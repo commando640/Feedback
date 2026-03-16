@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Areen Reviews Fahim 💌</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose:    #c0415a;
+    --rose-lt: #e8718a;
+    --cream:   #fdf6f0;
+    --ink:     #1c0a0f;
+    --muted:   #7a5560;
+    --border:  rgba(192,65,90,0.18);
+    --glass:   rgba(255,250,247,0.72);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background: #1a0810;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Animated Background ── */
+  .bg-wrap {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  }
+  .bg-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(180,40,70,0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(120,20,50,0.3) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 40% at 60% 30%, rgba(90,10,35,0.2) 0%, transparent 50%);
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 420px; height: 420px; background: #b0254a; top: -100px; left: -80px; animation-delay: 0s; }
+  .orb-2 { width: 300px; height: 300px; background: #7a1535; bottom: -60px; right: -60px; animation-delay: -4s; }
+  .orb-3 { width: 200px; height: 200px; background: #d45070; top: 50%; left: 55%; animation-delay: -8s; }
+
+  @keyframes drift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(30px, 20px) scale(1.08); }
+  }
+
+  /* Floating hearts */
+  .hearts-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+  .heart {
+    position: absolute;
+    font-size: 14px;
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.4; }
+    90%  { opacity: 0.15; }
+    100% { transform: translateY(-100vh) rotate(25deg) scale(1.1); opacity: 0; }
+  }
+
+  /* ── Card ── */
+  .card {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 460px;
+    background: var(--glass);
+    backdrop-filter: blur(28px) saturate(1.4);
+    -webkit-backdrop-filter: blur(28px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    animation: cardIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Header */
+  .card-header {
+    background: linear-gradient(135deg, #c0415a 0%, #8c1f3a 100%);
+    padding: 32px 32px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header::after {
+    content: '';
+    position: absolute; bottom: -1px; left: 0; right: 0; height: 20px;
+    background: var(--glass);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+  }
+  .header-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 500; letter-spacing: 3px;
+    color: rgba(255,230,235,0.7);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    animation: fadeUp 0.6s 0.2s both;
+  }
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 34px; font-weight: 600;
+    color: #fff;
+    line-height: 1.1;
+    animation: fadeUp 0.6s 0.3s both;
+  }
+  .header-title em { font-style: italic; color: #ffcdd6; }
+  .header-sub {
+    margin-top: 6px;
+    font-size: 13px; color: rgba(255,230,235,0.65);
+    animation: fadeUp 0.6s 0.4s both;
+  }
+  .header-icon {
+    font-size: 28px; margin-bottom: 10px; display: block;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.15); } }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(12px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* Form area */
+  .card-body {
+    padding: 28px 32px 32px;
+  }
+
+  .field {
+    margin-bottom: 18px;
+    animation: fadeUp 0.5s both;
+  }
+  .field:nth-child(1){ animation-delay:0.35s }
+  .field:nth-child(2){ animation-delay:0.45s }
+  .field:nth-child(3){ animation-delay:0.55s }
+  .field:nth-child(4){ animation-delay:0.65s }
+  .field:nth-child(5){ animation-delay:0.75s }
+
+  .field label {
+    display: block;
+    font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 7px;
+  }
+  .field label span { font-size: 13px; margin-left: 3px; }
+
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--ink);
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input[type=text]::placeholder, textarea::placeholder { color: #b09098; }
+  input[type=text]:focus, select:focus, textarea:focus {
+    border-color: var(--rose);
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 0 0 3px rgba(192,65,90,0.12);
+  }
+  textarea { resize: none; min-height: 90px; line-height: 1.6; }
+
+  /* Custom select arrow */
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '▾';
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--rose); pointer-events: none; font-size: 13px;
+  }
+
+  /* Rating stars visual */
+  .rating-preview {
+    display: flex; align-items: center; gap: 6px; margin-top: 6px;
+  }
+  .stars { color: #e8a020; font-size: 15px; letter-spacing: 1px; }
+  .rating-label { font-size: 12px; color: var(--muted); }
+
+  /* Submit button */
+  .btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #c0415a 0%, #8c1f3a 100%);
+    border: none; border-radius: 14px;
+    color: white; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500; letter-spacing: 0.4px;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 6px 24px rgba(160,30,60,0.4);
+    margin-top: 6px;
+    animation: fadeUp 0.5s 0.85s both;
+  }
+  .btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(160,30,60,0.5); }
+  .btn:hover::before { opacity: 1; }
+  .btn:active { transform: scale(0.98); }
+  .btn-icon { margin-right: 6px; }
+
+  /* Loading state */
+  .btn.loading { pointer-events: none; opacity: 0.75; }
+  .btn.loading::after {
+    content: '';
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+
+  /* Footer */
+  .card-footer {
+    padding: 14px 32px 20px;
+    text-align: center;
+    border-top: 1px solid rgba(192,65,90,0.1);
+    animation: fadeUp 0.5s 0.95s both;
+  }
+  .card-footer p { font-size: 11px; color: var(--muted); letter-spacing: 0.5px; }
+
+  /* Success overlay */
+  .success-overlay {
+    display: none;
+    position: absolute; inset: 0; z-index: 10;
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    align-items: center; justify-content: center;
+    flex-direction: column; text-align: center;
+    padding: 40px;
+    border-radius: 24px;
+  }
+  .success-overlay.show { display: flex; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  .success-icon { font-size: 56px; margin-bottom: 18px; animation: bounceIn 0.6s 0.1s both; }
+  @keyframes bounceIn {
+    0%   { transform: scale(0.5); opacity:0; }
+    70%  { transform: scale(1.15); opacity:1; }
+    100% { transform: scale(1); }
+  }
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px; font-weight: 600; color: var(--ink);
+    line-height: 1.2; margin-bottom: 10px;
+  }
+  .success-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 280px; }
+  .btn-reset {
+    margin-top: 24px;
+    padding: 11px 28px;
+    background: transparent;
+    border: 1px solid var(--rose);
+    border-radius: 50px; color: var(--rose);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover { background: var(--rose); color: white; }
+
+  /* Error toast */
+  .toast {
+    display: none;
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #2d0a10; color: #ffb3be;
+    padding: 12px 22px; border-radius: 50px;
+    font-size: 13px; border: 1px solid rgba(192,65,90,0.35);
+    z-index: 100; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .toast.show { display: block; animation: toastIn 0.3s ease; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-wrap">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<div class="hearts-wrap" id="heartsWrap"></div>
+
+<!-- Card -->
+<div class="card" id="card">
+
+  <!-- Success overlay -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-icon">💌</div>
+    <h2 class="success-title">Review Sent<br><em style="font-family:'Cormorant Garamond',serif; color:#c0415a;">with Love</em></h2>
+    <p class="success-sub">Fahim will receive your heartfelt review shortly. 🌹</p>
+    <button class="btn-reset" onclick="resetForm()">Send Another ↩</button>
+  </div>
+
+  <!-- Header -->
+  <div class="card-header">
+    <span class="header-icon">💗</span>
+    <p class="header-eyebrow">Official Review</p>
+    <h1 class="header-title">Areen Reviews <em>Fahim</em></h1>
+    <p class="header-sub">A thoughtful evaluation — from the heart</p>
+  </div>
+
+  <!-- Form -->
+  <div class="card-body">
+    <form id="reviewForm">
+
+      <div class="field">
+        <label>Your Name <span>✍️</span></label>
+        <input type="text" name="name" placeholder="Areen" required>
+      </div>
+
+      <div class="field">
+        <label>Boyfriend Rating <span>⭐</span></label>
+        <div class="select-wrap">
+          <select name="rating" id="ratingSelect" onchange="updateStars()">
+            <option value="10 - Perfect ✨">10 — Perfect ✨</option>
+            <option value="9 - Amazing 🤩">9 — Amazing 🤩</option>
+            <option value="8 - Very Good 😍">8 — Very Good 😍</option>
+            <option value="7 - Good 🙂">7 — Good 🙂</option>
+            <option value="6 - Needs Work 🤔">6 — Needs Work 🤔</option>
+            <option value="5 - Hmm... 😅">5 — Hmm... 😅</option>
+          </select>
+        </div>
+        <div class="rating-preview">
+          <span class="stars" id="starsDisplay">★★★★★★★★★★</span>
+          <span class="rating-label" id="ratingLabel">Perfect</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>What you love most about Fahim <span>😍</span></label>
+        <input type="text" name="cute" placeholder="His smile, his care...">
+      </div>
+
+      <div class="field">
+        <label>His most annoying habit <span>😅</span></label>
+        <input type="text" name="annoying" placeholder="Being too cute, maybe?">
+      </div>
+
+      <div class="field">
+        <label>Secret message for Fahim <span>💌</span></label>
+        <textarea name="message" placeholder="Write something only he should know..."></textarea>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">
+        <span class="btn-icon">💌</span> Send Review to Fahim
+      </button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <p>Made with 💗 by Fahim &nbsp;·&nbsp; Relationship Review System</p>
+  </div>
+
+</div>
+
+<!-- Error toast -->
+<div class="toast" id="toast">😢 Failed to send. Please try again.</div>
+
+<script>
+/* ── EmailJS ── */
+(function(){ emailjs.init("o9IGKAUy_mAPTF81z"); })();
+
+/* ── Floating hearts ── */
+(function(){
+  const wrap = document.getElementById('heartsWrap');
+  const glyphs = ['♥','💗','💕','💖','✦','❣'];
+  for(let i = 0; i < 18; i++){
+    const el = document.createElement('span');
+    el.className = 'heart';
+    el.textContent = glyphs[Math.floor(Math.random()*glyphs.length)];
+    el.style.cssText = `
+      left:${Math.random()*100}%;
+      bottom:-20px;
+      font-size:${10 + Math.random()*14}px;
+      animation-duration:${8 + Math.random()*10}s;
+      animation-delay:${Math.random()*10}s;
+      color:rgba(${180+Math.round(Math.random()*50)},${50+Math.round(Math.random()*40)},${80+Math.round(Math.random()*40)},0.55);
+    `;
+    wrap.appendChild(el);
+  }
+})();
+
+/* ── Stars rating preview ── */
+const ratingMeta = {
+  '10': {stars:10, label:'Perfect ✨'},
+  '9':  {stars:9,  label:'Amazing 🤩'},
+  '8':  {stars:8,  label:'Very Good 😍'},
+  '7':  {stars:7,  label:'Good 🙂'},
+  '6':  {stars:6,  label:'Needs Work 🤔'},
+  '5':  {stars:5,  label:'Hmm... 😅'},
+};
+function updateStars(){
+  const v = document.getElementById('ratingSelect').value.charAt(0);
+  const m = ratingMeta[v] || ratingMeta['10'];
+  document.getElementById('starsDisplay').textContent = '★'.repeat(m.stars) + '☆'.repeat(10-m.stars);
+  document.getElementById('ratingLabel').textContent = m.label;
+}
+
+/* ── Form submit ── */
+document.getElementById('reviewForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  btn.classList.add('loading');
+  btn.textContent = 'Sending...';
+  emailjs.sendForm('service_dzo78nl','template_5yfo5cs', this)
+    .then(function(){
+      btn.classList.remove('loading');
+      document.getElementById('successOverlay').classList.add('show');
+    }, function(){
+      btn.classList.remove('loading');
+      btn.innerHTML = '<span class="btn-icon">💌</span> Send Review to Fahim';
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(()=> t.classList.remove('show'), 3500);
+    });
+});
+
+/* ── Reset ── */
+function resetForm(){
+  document.getElementById('reviewForm').reset();
+  document.getElementById('submitBtn').innerHTML = '<span class="btn-icon">💌</span> Send Review to Fahim';
+  document.getElementById('successOverlay').classList.remove('show');
+  updateStars();
+}
+</script>
+</body>
+</html>
