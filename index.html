@@ -23,6 +23,7 @@
   --border:     rgba(212,168,83,0.18);
   --border-hi:  rgba(212,168,83,0.45);
   --green:      #4caf7d;
+  --blue-soft:  #6ab4d4;
 }
 html { scroll-behavior: smooth; }
 body {
@@ -165,6 +166,62 @@ input[type=text]:focus, textarea:focus {
 }
 textarea { resize:none; min-height:100px; line-height:1.65; }
 .field-footer { display:flex; justify-content:flex-end; margin-top:5px; font-size:11px; color:var(--ink-muted); opacity:0.5; }
+
+/* ══ FEEL BAD FIELD — new ══ */
+.feel-bad-field {
+  margin-bottom:18px;
+  position:relative;
+}
+.feel-bad-field label {
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; font-weight:600; letter-spacing:2px;
+  text-transform:uppercase; color:#b0c8e0; margin-bottom:8px; opacity:0.9;
+}
+.feel-bad-toggle-row {
+  display:flex; gap:8px; margin-bottom:10px;
+}
+.feel-bad-opt {
+  flex:1; padding:11px 8px;
+  background:rgba(255,255,255,0.03); border:1.5px solid rgba(106,180,212,0.15);
+  border-radius:13px; cursor:pointer; text-align:center;
+  font-family:'Outfit',sans-serif; font-size:12px; font-weight:500;
+  color:var(--ink-muted); transition:all 0.2s;
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+}
+.feel-bad-opt .fb-icon { font-size:20px; }
+.feel-bad-opt.selected-yes {
+  background:rgba(192,50,79,0.15); border-color:rgba(192,50,79,0.45);
+  color:var(--crimson-lt); transform:translateY(-2px);
+  box-shadow:0 4px 14px rgba(192,50,79,0.18);
+}
+.feel-bad-opt.selected-no {
+  background:rgba(76,175,125,0.12); border-color:rgba(76,175,125,0.35);
+  color:#7fdfaa; transform:translateY(-2px);
+  box-shadow:0 4px 14px rgba(76,175,125,0.12);
+}
+.feel-bad-textarea-wrap {
+  overflow:hidden; max-height:0;
+  transition:max-height 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease;
+  opacity:0;
+}
+.feel-bad-textarea-wrap.open {
+  max-height:160px; opacity:1;
+}
+.feel-bad-textarea-wrap textarea {
+  border-color:rgba(192,50,79,0.28);
+  background:rgba(192,50,79,0.05);
+  min-height:88px;
+}
+.feel-bad-textarea-wrap textarea:focus {
+  border-color:rgba(192,50,79,0.55);
+  box-shadow:0 0 0 3px rgba(192,50,79,0.09);
+}
+.feel-bad-texture-hint {
+  font-size:10.5px; color:var(--ink-muted); opacity:0.55;
+  margin-top:7px; line-height:1.5; font-style:italic;
+  padding-left:2px;
+}
 
 /* ══ RATING BOX ══ */
 .rating-box { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:18px; padding:16px 12px 13px; }
@@ -331,6 +388,14 @@ textarea { resize:none; min-height:100px; line-height:1.65; }
 .day-rating { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--gold-lt); width:24px; text-align:right; flex-shrink:0; }
 .day-empty { font-size:11px; color:var(--ink-muted); opacity:0.35; font-style:italic; }
 .day-mood { font-size:13px; flex-shrink:0; }
+
+/* Day feel-bad indicator dot in report */
+.day-fb-dot {
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:rgba(192,50,79,0.55); margin-left:-2px;
+  box-shadow:0 0 5px rgba(192,50,79,0.4);
+  title:'Had something bad';
+}
 
 /* Weekly avg bar */
 .week-avg-row { padding:10px 16px 12px; }
@@ -518,6 +583,28 @@ textarea { resize:none; min-height:100px; line-height:1.65; }
             <textarea id="message" placeholder="What's in your heart today? 🌹" maxlength="400" oninput="updateCharCount()"></textarea>
             <div class="field-footer"><span id="charCount">0 / 400</span></div>
           </div>
+
+          <!-- ══ ANYTHING FEEL BAD TODAY? ══ -->
+          <div class="feel-bad-field">
+            <label>🩹 &nbsp;Anything Feel Bad Today?</label>
+            <div class="feel-bad-toggle-row">
+              <button type="button" class="feel-bad-opt" id="fbYes" onclick="setFeelBad(true)">
+                <span class="fb-icon">😔</span>
+                <span>Yeah, a little…</span>
+              </button>
+              <button type="button" class="feel-bad-opt" id="fbNo" onclick="setFeelBad(false)">
+                <span class="fb-icon">🌸</span>
+                <span>Nope, all good!</span>
+              </button>
+            </div>
+            <div class="feel-bad-textarea-wrap" id="feelBadWrap">
+              <textarea id="feelBad" placeholder="You can tell him anything… he wants to know 💙" maxlength="300" oninput="updateFeelBadCount()"></textarea>
+              <div class="field-footer"><span id="feelBadCount">0 / 300</span></div>
+            </div>
+            <p class="feel-bad-texture-hint" id="feelBadHint">Optional — this stays private between you two 🤍</p>
+          </div>
+          <!-- ══ END FEEL BAD ══ -->
+
           <div class="field">
             <label>🌹 &nbsp;Today's One Word for Fahim</label>
             <input type="text" id="oneword" placeholder="Mine, Sunshine, Everything..." autocomplete="off">
@@ -585,9 +672,8 @@ function getTodayKey() {
 }
 
 function getWeekKey(dateStr) {
-  // Returns Monday of that week as key
   const d = new Date(dateStr + 'T12:00:00');
-  const day = d.getDay(); // 0=Sun
+  const day = d.getDay();
   const diff = (day === 0) ? -6 : 1 - day;
   const monday = new Date(d);
   monday.setDate(d.getDate() + diff);
@@ -632,7 +718,6 @@ function switchTab(tab) {
   if (tab==='report') renderReport();
 }
 
-/* Check if already reviewed today */
 function checkTodayStatus() {
   const reviews = getAllReviews();
   const today   = getTodayKey();
@@ -647,10 +732,9 @@ function checkTodayStatus() {
     document.getElementById('todayRatingShow').textContent = `Today's rating: ${todayR.rating}/10`;
     badge.textContent = `✅ Reviewed today! Streak: ${streak} days 🔥`;
     badge.className = 'daily-badge done';
-    // Disable form
     document.querySelectorAll('.btn-next, .btn-submit, .btn-back').forEach(b => b.style.opacity='0.4');
     document.querySelectorAll('input, textarea').forEach(el => el.disabled = true);
-    document.querySelectorAll('.num-btn, .mood-btn').forEach(b => b.style.pointerEvents='none');
+    document.querySelectorAll('.num-btn, .mood-btn, .feel-bad-opt').forEach(b => b.style.pointerEvents='none');
   } else {
     if (streak >= 2) {
       badge.textContent = `🔥 ${streak} day streak! Keep it up!`;
@@ -716,30 +800,61 @@ function updateCharCount(){
   document.getElementById('charCount').textContent=document.getElementById('message').value.length+' / 400';
 }
 
+/* ── Feel Bad logic ── */
+let feelBadAnswer = null; // null = not chosen, true = yes, false = no
+
+function setFeelBad(isYes) {
+  feelBadAnswer = isYes;
+  const yesBtn = document.getElementById('fbYes');
+  const noBtn  = document.getElementById('fbNo');
+  const wrap   = document.getElementById('feelBadWrap');
+  const hint   = document.getElementById('feelBadHint');
+
+  yesBtn.classList.remove('selected-yes','selected-no');
+  noBtn.classList.remove('selected-yes','selected-no');
+
+  if (isYes) {
+    yesBtn.classList.add('selected-yes');
+    wrap.classList.add('open');
+    hint.textContent = 'Tell him what's been bothering you — it matters 💙';
+    setTimeout(() => document.getElementById('feelBad').focus(), 420);
+  } else {
+    noBtn.classList.add('selected-no');
+    wrap.classList.remove('open');
+    document.getElementById('feelBad').value = '';
+    document.getElementById('feelBadCount').textContent = '0 / 300';
+    hint.textContent = 'Yay! Glad today felt okay 🌸';
+  }
+}
+
+function updateFeelBadCount(){
+  document.getElementById('feelBadCount').textContent = document.getElementById('feelBad').value.length + ' / 300';
+}
+
 /* ── Submit ── */
 function submitForm(){
   const todayKey = getTodayKey();
   const existing = getAllReviews().find(r=>r.date===todayKey);
   if(existing){ showToast('⚠️ Already reviewed today!'); return; }
 
-  const name    =document.getElementById('name').value.trim()||'Areen';
-  const cute    =document.getElementById('cute').value.trim();
-  const message =document.getElementById('message').value.trim();
-  const oneword =document.getElementById('oneword').value.trim();
-  const mood    =selectedMood;
-  const rating  =starRating;
-  const wordCount=message?message.split(/\s+/).filter(Boolean).length:0;
-  const moodIcon=mood.split(' ')[0];
+  const name     = document.getElementById('name').value.trim()||'Areen';
+  const cute     = document.getElementById('cute').value.trim();
+  const message  = document.getElementById('message').value.trim();
+  const oneword  = document.getElementById('oneword').value.trim();
+  const mood     = selectedMood;
+  const rating   = starRating;
+  const feelBad  = feelBadAnswer === true ? document.getElementById('feelBad').value.trim() : '';
+  const feelBadStatus = feelBadAnswer === null ? 'Not answered' : (feelBadAnswer ? ('Yes — ' + (feelBad || 'no details given')) : 'No, all good!');
+  const moodIcon = mood.split(' ')[0];
 
   const btn=document.getElementById('submitBtn');
   btn.classList.add('loading'); btn.innerHTML='Sending...';
 
   const ratingText=rating+' / 10 — '+ratingData[rating].text;
-  emailjs.send('service_dzo78nl','template_5yfo5cs',{name,rating:ratingText,cute,message,oneword,mood})
+  emailjs.send('service_dzo78nl','template_5yfo5cs',{name,rating:ratingText,cute,message,oneword,mood,feel_bad:feelBadStatus})
     .then(()=>{
       btn.classList.remove('loading');
-      // Save locally
-      saveReview({ date:todayKey, rating, mood, name, cute, message, oneword, ts:Date.now() });
+      saveReview({ date:todayKey, rating, mood, name, cute, message, oneword, feelBad: feelBadAnswer === true ? (feelBad||'(no details)') : '', ts:Date.now() });
       const streak=getStreak();
       document.getElementById('sucRating').textContent=rating;
       document.getElementById('sucMood').textContent=moodIcon;
@@ -792,24 +907,20 @@ function renderReport() {
     return;
   }
 
-  // Group reviews by date (take last one per day if multiple)
   const byDate = {};
   reviews.forEach(r => { byDate[r.date] = r; });
 
-  // Overall stats
   const allRatings = Object.values(byDate).map(r=>r.rating);
   const overallAvg = (allRatings.reduce((a,b)=>a+b,0)/allRatings.length).toFixed(1);
   const highest    = Math.max(...allRatings);
   const lowest     = Math.min(...allRatings);
   const streak     = getStreak();
 
-  // Group by week
   const weeks      = groupByWeek();
   const weekKeys   = Object.keys(weeks).sort().reverse();
   const currentWeekKey = getWeekKey(getTodayKey());
 
   let html = `
-  <!-- Summary cards -->
   <div class="summary-row">
     <div class="sum-card feat">
       <div class="sum-val">${overallAvg}</div>
@@ -855,18 +966,20 @@ function renderReport() {
     const weekNum  = weekKeys.length - idx;
 
     let dayRowsHtml = '';
-    weekDays.forEach((dayKey,di) => {
+    weekDays.forEach((dayKey) => {
       const r = byDate[dayKey];
       const d = new Date(dayKey+'T12:00:00');
       const dayName = DAY_NAMES[d.getDay()];
       const dayDate = `${d.getDate()} ${MONTH_NAMES[d.getMonth()]}`;
       if (r) {
         const moodIcon=r.mood?r.mood.split(' ')[0]:'💗';
+        const fbDot = r.feelBad ? `<span class="day-fb-dot" title="Had something bad today"></span>` : '';
         dayRowsHtml += `<div class="day-row">
           <span class="day-name">${dayName}</span>
           <span class="day-date">${dayDate}</span>
           <div class="day-bar-wrap"><div class="day-bar-fill" style="width:${r.rating*10}%"></div></div>
           <span class="day-mood">${moodIcon}</span>
+          ${fbDot}
           <span class="day-rating">${r.rating}</span>
         </div>`;
       } else {
@@ -902,7 +1015,6 @@ function renderReport() {
   html += '</div>';
   body.innerHTML = html;
 
-  // Auto-open current week
   const curCard = document.getElementById('week_'+currentWeekKey);
   if (curCard) toggleWeek('week_'+currentWeekKey);
 }
